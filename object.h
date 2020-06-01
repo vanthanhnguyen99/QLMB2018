@@ -633,6 +633,7 @@ void themMayBay(listMayBay &ds)
 								{
 									anConTro();
 									gotoxy(0,30);
+									changeColor(15);
 									cout << "So cho phai lon hon 20";
 									Sleep(1500);
 									gotoxy(0,30);
@@ -716,4 +717,3 @@ void themMayBay(listMayBay &ds)
 	}
 }
 #endif
-

@@ -151,6 +151,15 @@ int mainMenu()
 	}
 	return -1;
 }
+// ============================== SO CHO MAY BAY ===========================================
+int soChoMayBay(listMayBay &ds, string SoHieu)
+{
+	for (int i = 0; i  < ds.n; i++)
+	{
+		if (ds.list[i]->SoHieu == SoHieu) return ds.list[i]->socho;
+	}
+	return 0;
+}
 // ==================================== LOAD FILE MAY BAY ====================================
 bool loadFileMB(listMayBay &ds)
 {
@@ -175,7 +184,7 @@ bool loadFileMB(listMayBay &ds)
 	return 1;
 }
 // ==================================== LOAD FILE CHUYEN BAY ====================================
-bool loadFileCB(listChuyenBay &ds)
+bool loadFileCB(listChuyenBay &ds, listMayBay dsmb)
 {
 	ifstream infile;
 	infile.open("DSCB.txt", ios::in);
@@ -202,6 +211,7 @@ bool loadFileCB(listChuyenBay &ds)
 			ds.Head->chuyenbay.NgayKhoiHanh = date;
 			ds.Head->chuyenbay.Den = den;
 			ds.Head->chuyenbay.trangthai = trangthai;
+			ds.Head->chuyenbay.ticket = new Ve[soChoMayBay(dsmb,SoHieu)];
 			ds.Head->next = NULL;
 		}
 		else
@@ -215,6 +225,7 @@ bool loadFileCB(listChuyenBay &ds)
 			p->chuyenbay.NgayKhoiHanh = date;
 			p->chuyenbay.Den = den;
 			p->chuyenbay.trangthai = trangthai;
+			p->chuyenbay.ticket = new Ve[soChoMayBay(dsmb,SoHieu)];
 			p->next = NULL;
 		}
 	}
@@ -338,7 +349,7 @@ void themMayBay(listMayBay &ds)
 	string Loai;
 	string socho;
 	gotoxy(50,0);
-	showDSMB(ds,1,50,0,maxpage);
+	showDSMB(ds,maxpage,50,0,maxpage);
 	gotoxy(0,8);
 	cout << "So hieu: ";
 	gotoxy(0,11);
@@ -714,6 +725,103 @@ void themMayBay(listMayBay &ds)
 			}
 			else return;
 		}
+	}
+}
+// ============================= GIAI PHONG BO NHO TRONG DANH SACH MAY BAY ==========================
+void deleteMB(listMayBay &ds, int vitri)
+{
+/*	if (vitri == ds.n-1)
+	{
+		delete ds.list[vitri];
+		ds.list[vitri] = 0;
+		ds.n--;
+		return;
+	} */
+	delete ds.list[vitri];
+	ds.list[vitri] = NULL;
+	for (int i = vitri; i < ds.n - 1; i++)
+	{
+		ds.list[i] = ds.list[i+1];
+	}
+	ds.list[ds.n-1] = NULL;
+	ds.n--;
+	return;
+}
+// ================================= XOA MAY BAY ====================================
+void xoaMayBay(listMayBay &ds) // con thieu chuyen bay
+{
+	if(ds.n == 0) return;
+	anConTro();
+	gotoxy(10,0);
+	int maxpage;
+	if (ds.n % 10 == 0) maxpage = ds.n/10;
+	else maxpage = ds.n/10 + 1;
+	showDSMB(ds,1,10,0,maxpage);
+	gotoxy(7,3);
+	cout << "->";
+	int cur = 0;
+	char c;
+	bool kytu;
+	pressKey(c,kytu);
+	while (c != 27)
+	{
+		if (c == UP && !kytu) // UP
+		{
+			if (cur > 0)
+			{
+				gotoxy(7,2*(cur%10)+3);
+				cout << "  ";
+				if(cur%10 == 0) 
+				{
+					gotoxy(10,0);
+					showDSMB(ds,(cur-1)/10+1,10,0,maxpage);
+				}
+				cur--;
+				gotoxy(7,2*(cur%10)+3);
+				cout << "->";
+			}
+		}
+		if (c == DOWN && !kytu) // DOWN
+		{
+			if (cur < ds.n-1)
+			{
+				gotoxy(7,2*(cur%10)+3);
+				cout << "  ";
+				if (cur%10 == 9) 
+				{
+					gotoxy(10,0);
+					showDSMB(ds,(cur+1)/10+1,10,0,maxpage);
+				}
+				cur++;
+				gotoxy(7,2*(cur%10)+3);
+				cout << "->";
+			}
+		}
+		if (c == ENTER)
+		{
+			gotoxy(0,30);
+			cout << "Ban co chac chan muon xoa may bay co ma la: " << ds.list[cur]->SoHieu << "?" << endl;
+			cout << "Nhan Y de XAC NHAN hoac nhan phim BAT KY de HUY";
+			pressKey(c,kytu);
+			if (inHoa(c) == 89 && kytu)
+			{
+				deleteMB(ds,cur);
+				if (ds.n % 10 == 0) maxpage = ds.n/10;
+				else maxpage = ds.n/10 + 1;
+				gotoxy(7,2*(cur%10)+3);
+				cout << "  ";
+				cur = 0;
+				gotoxy(10,0);
+				showDSMB(ds,1,10,0,maxpage);
+				gotoxy(7,3);
+				cout << "->";
+			}
+			gotoxy(0,30);
+			cout << "                                                           " << endl;
+			cout << "                                                           ";
+		}
+		if(ds.n == 0) return;
+		pressKey(c,kytu);
 	}
 }
 #endif

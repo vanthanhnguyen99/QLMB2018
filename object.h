@@ -365,19 +365,6 @@ void themMayBay(listMayBay &ds)
 	char c;
 	bool kytu;
 	pressKey(c,kytu);
-	if (c == 27 && !isExit(c,kytu))
-	{
-		gotoxy(0,8);
-		cout << "So hieu: ";
-		gotoxy(0,11);
-		cout << "Loai: ";
-		gotoxy(0,14);
-		cout << "So cho: ";
-		gotoxy(25-2,20);
-		cout << "LUU";
-		gotoxy(10+SoHieu.length(),8);
-		hienConTro();
-	}
 	while (c != 27)
 	{
 		if (c == UP && !kytu) // UP
@@ -821,6 +808,438 @@ void xoaMayBay(listMayBay &ds) // con thieu chuyen bay
 			cout << "                                                           ";
 		}
 		if(ds.n == 0) return;
+		pressKey(c,kytu);
+	}
+}
+// ================================ CHINH SUA MAY BAY ==========================
+void chinhSuaMayBay(listMayBay &ds, int vitri) // thieu ds chuyen bay de cap nhat
+{
+	// sao chep thong tin goc
+	MayBay *temp = new MayBay;
+	temp->SoHieu = ds.list[vitri]->SoHieu;
+	temp->Loai = ds.list[vitri]->Loai;
+	temp->socho = ds.list[vitri]->socho;
+	
+	int maxpage;
+	int curpage = 1;
+	if (ds.n % 10 == 0) maxpage = ds.n/10;
+	else maxpage = ds.n/10 + 1;
+	
+	string socho = convertToString(temp->socho);
+	gotoxy(50,0);
+	showDSMB(ds,maxpage,50,0,maxpage);
+	gotoxy(0,8);
+	cout << "So hieu:  " << temp->SoHieu;
+	gotoxy(0,11);
+	cout << "Loai:  " << temp->Loai;
+	gotoxy(0,14);
+	cout << "So cho:  " << temp->socho;
+	gotoxy(25-2,20);
+	cout << "LUU";
+	gotoxy(10+temp->SoHieu.length(),8);
+	hienConTro();
+
+	int cur = 0;	
+	char c;
+	bool kytu;
+	pressKey(c,kytu);
+	while (c != 27)
+	{
+		if (c == UP && !kytu) // UP
+		{
+			if (cur > 0)
+			{
+				cur--;
+				switch(cur)
+				{
+					case 0: // So hieu
+						{
+							gotoxy(10+temp->SoHieu.length(),8);
+							break;
+						}
+					case 1: // Loai
+						{
+							gotoxy(7+temp->Loai.length(),11);
+							break;
+						}
+					case 2: // So cho
+						{
+							anConTro();
+							gotoxy(25-2,20);
+							changeColor(15);
+							cout << "LUU";
+							gotoxy(9+socho.length(),14);
+							hienConTro();
+							break;
+						}
+				}
+			}
+		}
+		if (c == DOWN && !kytu) // DOWN
+		{
+			if (cur < 3)
+			{
+				cur++;
+				switch(cur)
+				{
+					case 1: // Loai
+						{
+							gotoxy(7+temp->Loai.length(),11);
+							hienConTro();
+							break;
+						}
+					case 2: // So cho
+						{
+							gotoxy(9+socho.length(),14);
+							hienConTro();
+							break;
+						}
+					case 3: // LUU
+						{
+							anConTro();
+							gotoxy(25-2,20);
+							changeColor(12);
+							cout << "LUU";
+							break;
+						}
+				}
+			}
+		}
+		if (((c >= 65 && c <= 90) || (c >= 97 && c <= 122)) && kytu) // a->z, A->Z
+		{
+			switch (cur)
+			{
+				case 0: // Khong qua 7 ky tu
+					{
+						if (temp->SoHieu.length() < 7)
+						{
+							cout << inHoa(c);
+							temp->SoHieu = temp->SoHieu + inHoa(c);
+						}
+						break;
+					}
+				case 1: // Khong qua 7 ky tu
+					{
+						if (temp->Loai.length() < 10)
+						{
+							cout << inHoa(c);
+							temp->Loai = temp->Loai + inHoa(c);
+						}
+						break;
+					}
+			}
+		}
+		if ((c >= 48 && c <= 57) && kytu)
+		{
+			switch (cur)
+			{
+				case 0:
+					{
+						if (temp->SoHieu.length() < 7)
+						{
+							cout << c;
+							temp->SoHieu = temp->SoHieu + c;
+						}
+						break;
+					}
+				case 1:
+					{
+						if (temp->Loai.length() < 10)
+						{
+							cout << c;
+							temp->Loai = temp->Loai + c;
+						}
+						break;
+					}
+				case 2:
+					{
+						if (c == 48)
+						{
+							if (!(convertToInt(socho) == 0 || socho.length() == 0))
+							{
+								if (socho.length() < 4)
+								{
+									cout << c;
+									socho = socho + c;
+								}
+							}
+						}
+						else
+						{
+							if (socho.length() < 3)
+								{
+									cout << c;
+									socho = socho + c;
+								}
+						}
+						break;
+					}
+			}
+		}
+		if (c == BACKSPACE) // Backspace
+		{
+			switch (cur)
+			{
+				case 0:
+					{
+						if (temp->SoHieu.length() > 0)
+						{
+							anConTro();
+							gotoxy(wherex()-1,wherey());
+							cout << " ";
+							temp->SoHieu.erase(temp->SoHieu.length()-1);
+							gotoxy(wherex()-1,wherey());
+							hienConTro();
+						}
+						break;
+					}
+				case 1:
+					{
+						if (temp->Loai.length() > 0)
+						{
+							anConTro();
+							gotoxy(wherex()-1,wherey());
+							cout << " ";
+							temp->Loai.erase(temp->Loai.length()-1);
+							gotoxy(wherex()-1,wherey());
+							hienConTro();
+						}
+						break;
+					}
+				case 2:
+					{
+						if (socho.length() > 0)
+						{
+							anConTro();
+							gotoxy(wherex()-1,wherey());
+							cout << " ";
+							socho.erase(socho.length()-1);
+							gotoxy(wherex()-1,wherey());
+							hienConTro();
+						}
+						break;
+					}
+			}
+		}
+		if (c == ENTER) // Enter
+		{
+			if (cur == 3)
+			{
+				if (temp->SoHieu.length() == 0)
+				{
+					anConTro();
+					changeColor(15);
+					gotoxy(0,30);
+					cout << "Khong de trong So Hieu";
+					Sleep(1500);
+					gotoxy(0,30);
+					cout << "                      ";
+					
+					gotoxy(25-2,20);
+					changeColor(15);
+					cout << "LUU";
+					
+					gotoxy(10,8);
+					hienConTro();
+					cur = 0;
+				}
+				else
+				{
+					if (isExistMB(ds,temp->SoHieu) && temp->SoHieu != ds.list[vitri]->SoHieu)
+					{
+						anConTro();
+						gotoxy(0,30);
+						changeColor(15);
+						cout << "So hieu trung. Vui long kiem tra lai";
+						Sleep(1500);
+						gotoxy(0,30);
+						cout << "                                    ";
+						
+						gotoxy(25-2,20);
+						changeColor(15);
+						cout << "LUU";
+						
+						gotoxy(10+temp->SoHieu.length(),8);
+						hienConTro();
+						cur = 0;
+					}
+					else // check Loai
+					{
+						if (temp->Loai.length() == 0)
+						{
+							anConTro();
+							gotoxy(0,30);
+							changeColor(15);
+							cout << "Khong de trong loai may bay";
+							Sleep(1500);
+							gotoxy(0,30);
+							cout << "                           ";
+							
+							gotoxy(25-2,20);
+							changeColor(15);
+							cout << "LUU";
+							
+							gotoxy(7,11);
+							hienConTro();
+							cur = 1;
+						}
+						else // check so cho
+						{
+							if (socho.length() == 0)
+							{
+								anConTro();
+								gotoxy(0,30);
+								changeColor(15);
+								cout << "Khong de trong so cho";
+								Sleep(1500);
+								gotoxy(0,30);
+								cout << "                     ";
+								
+								gotoxy(25-2,20);
+								changeColor(15);
+								cout << "LUU";
+								
+								gotoxy(9,14);
+								hienConTro();
+								cur = 2;
+							}
+							else
+							{
+								if (convertToInt(socho) < 20)
+								{
+									anConTro();
+									gotoxy(0,30);
+									changeColor(15);
+									cout << "So cho phai lon hon 20";
+									Sleep(1500);
+									gotoxy(0,30);
+									cout << "                      ";
+									
+									gotoxy(25-2,20);
+									changeColor(15);
+									cout << "LUU";
+									
+									gotoxy(9+socho.length(),14);
+									hienConTro();
+									cur = 2;
+									
+								}
+								else // LUU
+								{
+									temp->socho = convertToInt(socho);
+									delete ds.list[vitri];
+									ds.list[vitri] = temp;
+									gotoxy(0,30);
+									cout << "Sua thong tin thanh cong!";
+									Sleep(1500);
+									return;
+								}	
+							}
+						}
+					}
+				}
+			}
+		}
+		pressKey(c,kytu);
+		if (c == 27)
+		{
+			if (!isExit(c,kytu))
+			{
+				switch (cur)
+				{
+					case 0:
+						{
+							gotoxy(10+temp->SoHieu.length(),8);
+							hienConTro();
+							break;
+						}
+					case 1:
+						{
+							gotoxy(7+temp->Loai.length(),11);
+							hienConTro();
+							break;
+						}
+					case 2:
+						{
+							gotoxy(9+socho.length(),14);
+							hienConTro();
+							break;
+						}
+				}
+			}
+			else return; 
+		} 
+	}
+}
+// ========================= CHON MAY BAY DE CHINH SUA ======================
+void chonChinhSua(listMayBay &ds)
+{
+	changeColor(15);
+	anConTro();
+	system("cls");
+	if (ds.n == 0)
+	{
+		cout << "Danh sach rong !" << endl;
+		system("pause");
+		return;
+	}
+	int maxpage;
+	if (ds.n%10 == 0) maxpage = ds.n/10;
+	else maxpage = ds.n/10 + 1;
+	
+	gotoxy(10,0);
+	showDSMB(ds,1,10,0,maxpage);
+	gotoxy(7,3);
+	cout << "->";
+	char c;
+	bool kytu;
+	pressKey(c,kytu);
+	int vitri = 0;
+	while (c != 27)
+	{
+		if (c == UP && !kytu)
+		{
+			if (vitri > 0)
+			{
+				gotoxy(7,2*(vitri%10) + 3);
+				cout << "  ";
+				if (vitri%10 == 0)
+				{
+					gotoxy(10,0);
+					showDSMB(ds,vitri/10,10,0,maxpage);
+				}
+				vitri--;
+				gotoxy(7,2*(vitri%10) + 3);
+				cout << "->";
+			}
+		}
+		if (c == DOWN && !kytu)
+		{
+			if (vitri < ds.n-1)
+			{
+				gotoxy(7,2*(vitri%10) + 3);
+				cout << "  ";
+				if (vitri%10 == 9)
+				{
+					gotoxy(10,0);
+					showDSMB(ds,(vitri+1)/10 + 1,10,0,maxpage);
+				}
+				vitri++;
+				gotoxy(7,2*(vitri%10) + 3);
+				cout << "->";
+			}
+		}
+		if (c == ENTER)
+		{
+			system("cls");
+			chinhSuaMayBay(ds,vitri);
+			system("cls");
+			
+			gotoxy(10,0);
+			showDSMB(ds,vitri/10+1,10,0,maxpage);
+			gotoxy(7,2*(vitri%10) + 3);
+			cout << "->";
+		}
 		pressKey(c,kytu);
 	}
 }

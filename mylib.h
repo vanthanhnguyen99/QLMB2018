@@ -102,6 +102,17 @@ int convertToInt(string x)
 	}
 	return res;
 }
+// ===================== 	CONVERT INTEGER SANG STRING ===========================
+string convertToString(int x)
+{
+	string res;
+	while (x != 0)
+	{
+		res = (char)(x%10 + 48) + res;
+		x = x/10;
+	}
+	return res;
+}
 // ====================== KIEM TRA THOAT ===============================
 bool isExit(char &c, bool &kytu)
 {

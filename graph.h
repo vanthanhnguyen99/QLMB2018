@@ -125,5 +125,66 @@ void veKhungMB(int dai, int rong)
 		gotoxy(wherex()-rong,wherey()+1);
 	}
 }
-
+// ===========================	 VE KHUNG CHUYEN BAY ============================== 
+void veKhungCB(int dai, int rong)
+{
+	for (int i = 0; i < dai; i++)
+	{
+		for (int j = 0; j < rong; j++)
+		{
+	 		if (i == 0) // i = 0
+			{
+				if (j == 0)
+				{
+					cout << traitren;
+					continue;
+				}
+				if (j == rong-1)
+				{
+					cout << phaitren;
+					continue;
+				}
+				if (j % (rong/5) == 0)
+				{
+					cout << ngangxuong;
+					continue;
+				}
+				cout << ngang;
+				continue;
+			}
+			if (i == dai-1) // i cuoi
+			{
+				if (j == 0)
+				{
+					cout << traiduoi;
+					continue;
+				}
+				if (j == rong-1)
+				{
+					cout << phaiduoi;
+					continue;
+				}
+				if (j % (rong/5) == 0)
+				{
+					cout << nganglen;
+					continue;
+				}
+				cout << ngang;
+				continue;
+			}
+			if (j == 0 || j == rong-1)
+			{
+				cout << doc;
+				continue;
+			}
+			if (j % (rong/5) == 0)
+			{
+				cout << doc;
+				continue;
+			}
+			cout << " ";
+		}
+		gotoxy(wherex()-rong,wherey()+1);
+	}
+}
 #endif

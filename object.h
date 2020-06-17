@@ -79,6 +79,7 @@ struct nodeChuyenBay
 struct listChuyenBay
 {
 	nodeChuyenBay *Head = NULL;
+	int n = 0;
 };
 
 
@@ -213,6 +214,7 @@ bool loadFileCB(listChuyenBay &ds, listMayBay dsmb)
 			ds.Head->chuyenbay.trangthai = trangthai;
 			ds.Head->chuyenbay.ticket = new Ve[soChoMayBay(dsmb,SoHieu)];
 			ds.Head->next = NULL;
+			ds.n++;
 		}
 		else
 		{
@@ -227,6 +229,7 @@ bool loadFileCB(listChuyenBay &ds, listMayBay dsmb)
 			p->chuyenbay.trangthai = trangthai;
 			p->chuyenbay.ticket = new Ve[soChoMayBay(dsmb,SoHieu)];
 			p->next = NULL;
+			ds.n++;
 		}
 	}
 	infile.close();
@@ -1242,5 +1245,87 @@ void chonChinhSua(listMayBay &ds)
 		}
 		pressKey(c,kytu);
 	}
+}
+// ============================ IN DANH SACH CHUYEN BAY ======================================
+void showDSCB(listChuyenBay &ds, int page, int x, int y, int maxpage)
+{
+	changeColor(15);
+	gotoxy(x,y);
+	veKhungCB(30,100);
+	gotoxy(x+10-7,y+1);
+	cout << "Ma chuyen bay";
+	gotoxy(x+30-4,y+1);
+	cout << "So hieu";
+	gotoxy(x+50-7,y+1);
+	cout << "Ngay khoi hanh";
+	gotoxy(x+70-2,y+1);
+	cout << "Den";
+	gotoxy(x+90-5,y+1);
+	cout << "Trang thai";
+	
+	int k = 0;
+	string ngay;
+	string thang;
+	string nam;
+	for (nodeChuyenBay *p = ds.Head; p != NULL; p = p->next)
+	{
+		if (k/10 + 1 < page) continue;
+		if (k/10 + 1 > page) break;
+		gotoxy(x+10-p->chuyenbay.MaCB.length()/2,2*k+3);
+		cout << p->chuyenbay.MaCB;
+		gotoxy(x+30-p->chuyenbay.SoHieu.length()/2,2*k+3);
+		cout << p->chuyenbay.SoHieu;
+		ngay = convertToString(p->chuyenbay.NgayKhoiHanh.ngay);
+		thang = convertToString(p->chuyenbay.NgayKhoiHanh.thang);
+		nam = convertToString(p->chuyenbay.NgayKhoiHanh.nam);
+		gotoxy(x+50-(ngay.length()+thang.length()+nam.length()+2)/2,2*k+3);
+		cout << ngay << "/" << thang << "/" << nam;
+		gotoxy(x+70-p->chuyenbay.Den.length()/2,2*k+3);
+		for (int i = 0; i < p->chuyenbay.Den.length(); i++)
+		{
+			if (p->chuyenbay.Den[i] != '-') cout << p->chuyenbay.Den[i];
+			else cout << " ";
+		}
+		switch (p->chuyenbay.trangthai)
+		{
+			case 0:
+				{
+					gotoxy(x+90-5,2*k+3);
+					cout << "Huy chuyen";
+					break;
+				}
+			case 1:
+				{
+					gotoxy(x+90-3,2*k+3);
+					cout << "Con ve";
+					break;
+				}
+			case 2:
+				{
+					gotoxy(x+90-3,2*k+3);
+					cout << "Het ve";
+					break;
+				}
+			case 3:
+				{
+					gotoxy(x+90-4,2*k+3);
+					cout << "Hoan tat";
+					break;
+				}
+		}
+		k++;
+	}
+	gotoxy(x+50-(6+3)/2,y+31);
+	cout << "---" << page << "/" << maxpage << "---";
+}
+// ============================== THEM CHUYEN BAY ===================================
+void themChuyenBay(listChuyenBay &ds, listMayBay mb)
+{
+	int maxpage;
+	if (ds.n%10 == 0) maxpage = ds.n/10;
+	else maxpage = ds.n/10 + 1;
+	anConTro();
+	showDSCB(ds,maxpage,50,0,maxpage);
+	
 }
 #endif

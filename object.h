@@ -18,9 +18,10 @@ using namespace std;
 // ==================== NGAY ==========================
 struct Ngay
 {
-	int ngay;
-	int thang;
-	int nam;
+	int gio = 0;
+	int ngay = 0;
+	int thang = 0;
+	int nam = 0;
 };
 // ========================= KHACH HANG =====================
 struct KhachHang
@@ -199,6 +200,7 @@ bool loadFileCB(listChuyenBay &ds, listMayBay dsmb)
 	{
 		infile >> MaChuyen;
 		infile >> SoHieu;
+		infile >> date.gio;
 		infile >> date.ngay;
 		infile >> date.thang;
 		infile >> date.nam;
@@ -1278,8 +1280,9 @@ void showDSCB(listChuyenBay &ds, int page, int x, int y, int maxpage)
 		ngay = convertToString(p->chuyenbay.NgayKhoiHanh.ngay);
 		thang = convertToString(p->chuyenbay.NgayKhoiHanh.thang);
 		nam = convertToString(p->chuyenbay.NgayKhoiHanh.nam);
-		gotoxy(x+50-(ngay.length()+thang.length()+nam.length()+2)/2,2*k+3);
-		cout << ngay << "/" << thang << "/" << nam;
+		gotoxy(x+50-(ngay.length()+thang.length()+nam.length()+2+4)/2,2*k+3);
+		if (p->chuyenbay.NgayKhoiHanh.gio < 10) cout << "0";
+		cout << p->chuyenbay.NgayKhoiHanh.gio << "h " << ngay << "/" << thang << "/" << nam;
 		gotoxy(x+70-p->chuyenbay.Den.length()/2,2*k+3);
 		for (int i = 0; i < p->chuyenbay.Den.length(); i++)
 		{
@@ -1327,5 +1330,283 @@ void themChuyenBay(listChuyenBay &ds, listMayBay mb)
 	anConTro();
 	showDSCB(ds,maxpage,50,0,maxpage);
 	
+	int maxpageMB;
+	int curpage = 1;
+	if (mb.n%10 == 0) maxpageMB = mb.n/10;
+	else maxpageMB = mb.n/10+1;
+	anConTro();
+	gotoxy(150,0);
+	showDSMB(mb,1,150,0,maxpageMB);
+	
+	gotoxy(0,1);
+	cout << "Ma chuyen bay: ";
+	gotoxy(0,5);
+	cout << "So hieu: ";
+	gotoxy(0,9);
+	cout << "Ngay khoi hanh: " << "00h 00/00/0";
+	gotoxy(3,11);
+	cout << "Gio: " << "00";
+	gotoxy(3,13);
+	cout << "Ngay: " << "00";
+	gotoxy(3,15);
+	cout << "Thang: " << "00";
+	gotoxy(3,17);
+	cout << "Nam: " << "0";
+	gotoxy(0,21);
+	cout << "Noi den: ";
+	gotoxy(0,25);
+	cout << "Trang thai: 1"; 
+	gotoxy(23,29);
+	cout << "LUU";
+	gotoxy(16,1);
+	int cur = 0;
+	hienConTro();
+	
+	string MaChuyen;
+	string SoHieu;
+	Ngay date;
+	string NoiDen;
+	int trangthai = 1;
+	char c;
+	bool kytu;
+	pressKey(c,kytu);
+	while (c != 27) // Escap
+	{
+		if (c == UP && !kytu) // UP 
+		{
+			if (cur > 0)
+			{
+				cur--;
+				switch(cur)
+				{
+					case 0: // Ma chuyen
+						{
+							gotoxy(16+MaChuyen.length(),1);
+							break;
+						}
+					case 1: // So hieu
+						{
+							gotoxy(9+SoHieu.length(),5);
+							break;
+						}
+					case 2: // Gio
+						{
+							gotoxy(5+3+2,11);
+							break;
+						}
+					case 3: // Ngay
+						{
+							gotoxy(6+3+2,13);
+							break;
+						}
+					case 4: // Thang
+						{
+							gotoxy(7+3+2,15);
+							break;
+						}
+					case 5: // Nam
+						{
+							gotoxy(5+3+chieuDaiSoDuong(date.nam),17); 
+							break;
+						}
+					case 6: // Noi den
+						{
+							gotoxy(9+NoiDen.length(),21);
+							break;
+						}
+					case 7: // Trang thai
+						{
+							anConTro();
+							changeColor(15);
+							gotoxy(23,29);
+							cout << "LUU";
+							gotoxy(12+1,25);
+							hienConTro();
+							break;
+						}
+				}
+			}
+		}
+		if (c == DOWN && !kytu)
+		{
+			if (cur < 8)
+			{
+				cur++;
+				switch(cur)
+				{
+					case 8: // Ma chuyen
+						{
+							anConTro();
+							changeColor(12);
+							gotoxy(23,29);
+							cout << "LUU";
+							break;
+						}
+					case 1: // So hieu
+						{
+							gotoxy(9+SoHieu.length(),5);
+							break;
+						}
+					case 2: // Gio
+						{
+							gotoxy(5+3+2,11);
+							break;
+						}
+					case 3: // Ngay
+						{
+							gotoxy(6+3+2,13);
+							break;
+						}
+					case 4: // Thang
+						{
+							gotoxy(7+3+2,15);
+							break;
+						}
+					case 5: // Nam
+						{
+							gotoxy(5+3+chieuDaiSoDuong(date.nam),17); 
+							break;
+						}
+					case 6: // Noi den
+						{
+							gotoxy(9+NoiDen.length(),21);
+							break;
+						}
+					case 7: // Trang thai
+						{
+							gotoxy(12+1,25);
+							break;
+						}
+				}
+			}
+		}
+		if (c == LEFT && !kytu)
+		{
+			if (curpage > 1)
+			{
+				anConTro();
+				curpage--;
+				gotoxy(150,0);
+				showDSMB(mb,curpage,150,0,maxpageMB);
+				hienConTro();
+				switch(cur)
+				{
+					case 0: // Ma chuyen
+						{
+							gotoxy(16+MaChuyen.length(),1);
+							break;
+						}
+					case 1: // So hieu
+						{
+							gotoxy(9+SoHieu.length(),5);
+							break;
+						}
+					case 2: // Gio
+						{
+							gotoxy(5+3+2,11);
+							break;
+						}
+					case 3: // Ngay
+						{
+							gotoxy(6+3+2,13);
+							break;
+						}
+					case 4: // Thang
+						{
+							gotoxy(7+3+2,15);
+							break;
+						}
+					case 5: // Nam
+						{
+							gotoxy(5+3+chieuDaiSoDuong(date.nam),17); 
+							break;
+						}
+					case 6: // Noi den
+						{
+							gotoxy(9+NoiDen.length(),21);
+							break;
+						}
+					case 7: // Trang thai
+						{
+							gotoxy(12+1,25);
+							hienConTro();
+							break;
+						}
+					case 8: // Ma chuyen
+						{
+							anConTro();
+							changeColor(12);
+							gotoxy(23,29);
+							cout << "LUU";
+							break;
+						}	
+				}
+			}
+		}
+		if (c == RIGHT && !kytu)
+		{
+			if (curpage < maxpageMB)
+			{
+				anConTro();
+				curpage++;
+				gotoxy(150,0);
+				showDSMB(mb,curpage,150,0,maxpageMB);
+				hienConTro();
+				switch(cur)
+				{
+					case 0: // Ma chuyen
+						{
+							gotoxy(16+MaChuyen.length(),1);
+							break;
+						}
+					case 1: // So hieu
+						{
+							gotoxy(9+SoHieu.length(),5);
+							break;
+						}
+					case 2: // Gio
+						{
+							gotoxy(5+3+2,11);
+							break;
+						}
+					case 3: // Ngay
+						{
+							gotoxy(6+3+2,13);
+							break;
+						}
+					case 4: // Thang
+						{
+							gotoxy(7+3+2,15);
+							break;
+						}
+					case 5: // Nam
+						{
+							gotoxy(5+3+chieuDaiSoDuong(date.nam),17); 
+							break;
+						}
+					case 6: // Noi den
+						{
+							gotoxy(9+NoiDen.length(),21);
+							break;
+						}
+					case 7: // Trang thai
+						{
+							gotoxy(12+1,25);
+							hienConTro();
+							break;
+						}
+					case 8: // Ma chuyen
+						{
+							anConTro();
+							changeColor(12);
+							gotoxy(23,29);
+							cout << "LUU";
+							break;
+						}	
+				}
+			}
+		}
+		pressKey(c,kytu);
+	}
 }
 #endif
